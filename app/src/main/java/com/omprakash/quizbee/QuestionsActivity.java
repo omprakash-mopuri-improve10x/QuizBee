@@ -22,6 +22,7 @@ public class QuestionsActivity extends AppCompatActivity {
     private ActivityQuestionsBinding binding;
     private QuestionNumbersAdapter questionNumbersAdapter;
     private ArrayList<Question> questions = new ArrayList<>();
+    private int currentQuestionNumber = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,8 @@ public class QuestionsActivity extends AppCompatActivity {
         getQuizzes();
         setupQuestionNumbersAdapter();
         setupQuestionNumbersRv();
+        handleNext();
+        handlePrevious();
     }
 
     private void getQuizzes() {
@@ -44,6 +47,8 @@ public class QuestionsActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     List<Quiz> quizzes = response.body();
                     questionNumbersAdapter.setQuestions(quizzes.get(0).getQuestions());
+                    questions = quizzes.get(0).getQuestions();
+                    onBindData(questions.get(0));
                 }
             }
 
@@ -60,11 +65,7 @@ public class QuestionsActivity extends AppCompatActivity {
         questionNumbersAdapter.setOnItemActionListener(new OnItemActionListener() {
             @Override
             public void OnItemClicked(Question question) {
-                binding.textView.setText(question.getQuestion());
-                binding.radioButton.setText(question.getAnswers().get(0));
-                binding.radioButton2.setText(question.getAnswers().get(1));
-                binding.radioButton3.setText(question.getAnswers().get(2));
-                binding.radioButton4.setText(question.getAnswers().get(3));
+                onBindData(question);
             }
         });
     }
@@ -72,5 +73,42 @@ public class QuestionsActivity extends AppCompatActivity {
     private void setupQuestionNumbersRv() {
         binding.questionNumbersRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         binding.questionNumbersRv.setAdapter(questionNumbersAdapter);
+    }
+
+    private void onBindData(Question question) {
+        currentQuestionNumber =  question.getNumber() - 1;
+        binding.textView.setText("Q). " + question.getQuestion());
+        binding.radioButton.setText(question.getAnswers().get(0));
+        binding.radioButton2.setText(question.getAnswers().get(1));
+        binding.radioButton3.setText(question.getAnswers().get(2));
+        binding.radioButton4.setText(question.getAnswers().get(3));
+    }
+
+    public void handleNext() {
+        binding.nextBtn.setOnClickListener(v -> {
+            try {
+                currentQuestionNumber++;
+                Question question = questions.get(currentQuestionNumber);
+                onBindData(question);
+                questionNumbersAdapter.selectedQuestionNumber = currentQuestionNumber;
+                questionNumbersAdapter.notifyDataSetChanged();
+            } catch (IndexOutOfBoundsException ex) {
+                Toast.makeText(this, "Questions completed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void handlePrevious() {
+        binding.previousBtn.setOnClickListener(v -> {
+            try {
+                currentQuestionNumber--;
+                Question question = questions.get(currentQuestionNumber);
+                onBindData(question);
+                questionNumbersAdapter.selectedQuestionNumber = currentQuestionNumber;
+                questionNumbersAdapter.notifyDataSetChanged();
+            } catch (IndexOutOfBoundsException ex) {
+                Toast.makeText(this, "There is no previous question", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

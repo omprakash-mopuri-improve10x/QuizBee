@@ -1,5 +1,7 @@
 package com.omprakash.quizbee;
 
+import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -13,8 +15,8 @@ import java.util.List;
 public class QuestionNumbersAdapter extends RecyclerView.Adapter<QuestionNumberViewHolder> {
 
     private List<Question> questions;
-
     private OnItemActionListener onItemActionListener;
+    public int selectedQuestionNumber = 0;
 
     void setQuestions(List<Question> questions) {
         this.questions = questions;
@@ -34,12 +36,21 @@ public class QuestionNumbersAdapter extends RecyclerView.Adapter<QuestionNumberV
     }
 
     @Override
-    public void onBindViewHolder(@NonNull QuestionNumberViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull QuestionNumberViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Question question = questions.get(position);
         holder.binding.questionNumberTxt.setText(String.valueOf(question.getNumber()));
         holder.binding.getRoot().setOnClickListener(v -> {
+            selectedQuestionNumber = position;
+            notifyDataSetChanged();
             onItemActionListener.OnItemClicked(question);
         });
+        if (selectedQuestionNumber == position) {
+            holder.binding.questionNumberTxt.setTextColor(Color.parseColor("#AC1D1D"));
+            holder.binding.materialCardView.setStrokeColor(Color.parseColor("#AC1D1D"));
+        } else {
+            holder.binding.questionNumberTxt.setTextColor(Color.parseColor("#000000"));
+            holder.binding.materialCardView.setStrokeColor(Color.parseColor("#000000"));
+        }
     }
 
     @Override

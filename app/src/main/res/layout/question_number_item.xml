@@ -7,12 +7,13 @@
     android:layout_margin="4dp">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/material_cardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:cardCornerRadius="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:strokeColor="#AC1D1D"
+        app:strokeColor="#000000"
         app:strokeWidth="2dp">
 
         <TextView
@@ -20,7 +21,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
-            android:text="1" />
+            android:text="1"
+            android:textColor="#000000" />
     </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
