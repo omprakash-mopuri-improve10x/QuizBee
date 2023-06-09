@@ -39,6 +39,7 @@ public class QuestionsActivity extends AppCompatActivity {
         handleNext();
         handlePrevious();
         handleRadioGroup();
+        handleSubmit();
     }
 
     private void getQuizzes() {
@@ -162,6 +163,25 @@ public class QuestionsActivity extends AppCompatActivity {
                     answerOptionsIndexes[currentQuestionPosition] = 3;
                 }
             }
+        });
+    }
+
+    private int[] getResult() {
+        int[] correctAnswers = new int[2];
+        for (int i = 0; i < questions.size(); i++) {
+            if (answerOptionsIndexes[i] == questions.get(i).getCorrectAnswer()) {
+                correctAnswers[0]++;
+            } else {
+                correctAnswers[1]++;
+            }
+        }
+        return correctAnswers;
+    }
+
+    private void handleSubmit() {
+        binding.submitBtn.setOnClickListener(v -> {
+            int[] correctAnswers = getResult();
+            Toast.makeText(this, String.valueOf("Correct Answers : " + correctAnswers[0] + "\n" + "Wrong Answers : " + correctAnswers[1]), Toast.LENGTH_LONG).show();
         });
     }
 }
