@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.omprakash.quizbee.databinding.ActivityQuestionsBinding;
@@ -24,6 +25,7 @@ public class QuestionsActivity extends AppCompatActivity {
     private QuestionNumbersAdapter questionNumbersAdapter;
     private ArrayList<Question> questions = new ArrayList<>();
     private int currentQuestionPosition = 0;
+    private Integer[] answerOptionsIndexes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,7 @@ public class QuestionsActivity extends AppCompatActivity {
         setupQuestionNumbersRv();
         handleNext();
         handlePrevious();
+        handleRadioGroup();
     }
 
     private void getQuizzes() {
@@ -49,6 +52,7 @@ public class QuestionsActivity extends AppCompatActivity {
                     List<Quiz> quizzes = response.body();
                     questionNumbersAdapter.setQuestions(quizzes.get(0).getQuestions());
                     questions = quizzes.get(0).getQuestions();
+                    answerOptionsIndexes = new Integer[quizzes.get(0).getQuestions().size()];
                     showData(questions.get(0));
                 }
             }
@@ -86,10 +90,22 @@ public class QuestionsActivity extends AppCompatActivity {
     private void showQuestion(Question question) {
         currentQuestionPosition = question.getNumber() - 1;
         binding.textView.setText("Q). " + question.getQuestion());
+        binding.radioGroup.clearCheck();
         binding.option1Rb.setText(question.getAnswers().get(0));
         binding.option2Rb.setText(question.getAnswers().get(1));
         binding.option3Rb.setText(question.getAnswers().get(2));
         binding.option4Rb.setText(question.getAnswers().get(3));
+        if (answerOptionsIndexes[currentQuestionPosition] != null) {
+            if (answerOptionsIndexes[currentQuestionPosition] == 0) {
+                binding.option1Rb.setChecked(true);
+            } else if (answerOptionsIndexes[currentQuestionPosition] == 1) {
+                binding.option2Rb.setChecked(true);
+            } else if (answerOptionsIndexes[currentQuestionPosition] == 2) {
+                binding.option3Rb.setChecked(true);
+            } else if (answerOptionsIndexes[currentQuestionPosition] == 3) {
+                binding.option4Rb.setChecked(true);
+            }
+        }
     }
 
     private void setQuestionNumberColor() {
@@ -129,6 +145,23 @@ public class QuestionsActivity extends AppCompatActivity {
             currentQuestionPosition--;
             Question question = questions.get(currentQuestionPosition);
             showData(question);
+        });
+    }
+
+    private void handleRadioGroup() {
+        binding.radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (binding.option1Rb.isChecked()) {
+                    answerOptionsIndexes[currentQuestionPosition] = 0;
+                } else if (binding.option2Rb.isChecked()) {
+                    answerOptionsIndexes[currentQuestionPosition] = 1;
+                } else if (binding.option3Rb.isChecked()) {
+                    answerOptionsIndexes[currentQuestionPosition] = 2;
+                } else if (binding.option4Rb.isChecked()) {
+                    answerOptionsIndexes[currentQuestionPosition] = 3;
+                }
+            }
         });
     }
 }
