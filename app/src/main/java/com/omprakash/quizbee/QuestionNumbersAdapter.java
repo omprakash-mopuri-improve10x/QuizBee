@@ -16,7 +16,7 @@ public class QuestionNumbersAdapter extends RecyclerView.Adapter<QuestionNumberV
 
     private List<Question> questions;
     private OnItemActionListener onItemActionListener;
-    public int selectedQuestionNumber = 0;
+    int currentQuestionPosition = 0;
 
     void setQuestions(List<Question> questions) {
         this.questions = questions;
@@ -40,13 +40,11 @@ public class QuestionNumbersAdapter extends RecyclerView.Adapter<QuestionNumberV
         Question question = questions.get(position);
         holder.binding.questionNumberTxt.setText(String.valueOf(question.getNumber()));
         holder.binding.getRoot().setOnClickListener(v -> {
-            selectedQuestionNumber = position;
-            notifyDataSetChanged();
             onItemActionListener.OnItemClicked(question);
         });
-        if (selectedQuestionNumber == position) {
-            holder.binding.questionNumberTxt.setTextColor(Color.parseColor("#AC1D1D"));
-            holder.binding.materialCardView.setStrokeColor(Color.parseColor("#AC1D1D"));
+        if (currentQuestionPosition == position) {
+            holder.binding.questionNumberTxt.setTextColor(Color.parseColor("#F57C00"));
+            holder.binding.materialCardView.setStrokeColor(Color.parseColor("#F57C00"));
         } else {
             holder.binding.questionNumberTxt.setTextColor(Color.parseColor("#000000"));
             holder.binding.materialCardView.setStrokeColor(Color.parseColor("#000000"));

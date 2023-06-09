@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.omprakash.quizbee.databinding.ActivityQuestionsBinding;
@@ -22,7 +23,7 @@ public class QuestionsActivity extends AppCompatActivity {
     private ActivityQuestionsBinding binding;
     private QuestionNumbersAdapter questionNumbersAdapter;
     private ArrayList<Question> questions = new ArrayList<>();
-    private int currentQuestionNumber = 0;
+    private int currentQuestionPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +49,7 @@ public class QuestionsActivity extends AppCompatActivity {
                     List<Quiz> quizzes = response.body();
                     questionNumbersAdapter.setQuestions(quizzes.get(0).getQuestions());
                     questions = quizzes.get(0).getQuestions();
-                    onBindData(questions.get(0));
+                    showData(questions.get(0));
                 }
             }
 
@@ -65,7 +66,7 @@ public class QuestionsActivity extends AppCompatActivity {
         questionNumbersAdapter.setOnItemActionListener(new OnItemActionListener() {
             @Override
             public void OnItemClicked(Question question) {
-                onBindData(question);
+                showData(question);
             }
         });
     }
@@ -75,40 +76,51 @@ public class QuestionsActivity extends AppCompatActivity {
         binding.questionNumbersRv.setAdapter(questionNumbersAdapter);
     }
 
-    private void onBindData(Question question) {
-        currentQuestionNumber =  question.getNumber() - 1;
+    private void showData(Question question) {
+        currentQuestionPosition = question.getNumber() - 1;
         binding.textView.setText("Q). " + question.getQuestion());
         binding.radioButton.setText(question.getAnswers().get(0));
         binding.radioButton2.setText(question.getAnswers().get(1));
         binding.radioButton3.setText(question.getAnswers().get(2));
         binding.radioButton4.setText(question.getAnswers().get(3));
+        questionNumbersAdapter.currentQuestionPosition = currentQuestionPosition;
+        questionNumbersAdapter.notifyDataSetChanged();
+        setPreviousBtnVisibility();
+        setNextAndSubmitBtnsVisibility();
     }
 
-    public void handleNext() {
+    private void setPreviousBtnVisibility() {
+        if (currentQuestionPosition == 0) {
+            binding.previousBtn.setVisibility(View.GONE);
+        } else {
+            binding.previousBtn.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setNextAndSubmitBtnsVisibility() {
+        if (currentQuestionPosition == questions.size() - 1) {
+            binding.nextBtn.setVisibility(View.GONE);
+            binding.submitBtn.setVisibility(View.VISIBLE);
+        } else {
+            binding.nextBtn.setVisibility(View.VISIBLE);
+            binding.submitBtn.setVisibility(View.GONE);
+        }
+    }
+
+    private void handleNext() {
         binding.nextBtn.setOnClickListener(v -> {
-            try {
-                currentQuestionNumber++;
-                Question question = questions.get(currentQuestionNumber);
-                onBindData(question);
-                questionNumbersAdapter.selectedQuestionNumber = currentQuestionNumber;
-                questionNumbersAdapter.notifyDataSetChanged();
-            } catch (IndexOutOfBoundsException ex) {
-                Toast.makeText(this, "Questions completed", Toast.LENGTH_SHORT).show();
-            }
+            currentQuestionPosition++;
+            Question question = questions.get(currentQuestionPosition);
+            showData(question);
+
         });
     }
 
-    public void handlePrevious() {
+    private void handlePrevious() {
         binding.previousBtn.setOnClickListener(v -> {
-            try {
-                currentQuestionNumber--;
-                Question question = questions.get(currentQuestionNumber);
-                onBindData(question);
-                questionNumbersAdapter.selectedQuestionNumber = currentQuestionNumber;
-                questionNumbersAdapter.notifyDataSetChanged();
-            } catch (IndexOutOfBoundsException ex) {
-                Toast.makeText(this, "There is no previous question", Toast.LENGTH_SHORT).show();
-            }
+            currentQuestionPosition--;
+            Question question = questions.get(currentQuestionPosition);
+            showData(question);
         });
     }
 }
