@@ -77,16 +77,24 @@ public class QuestionsActivity extends AppCompatActivity {
     }
 
     private void showData(Question question) {
-        currentQuestionPosition = question.getNumber() - 1;
-        binding.textView.setText("Q). " + question.getQuestion());
-        binding.radioButton.setText(question.getAnswers().get(0));
-        binding.radioButton2.setText(question.getAnswers().get(1));
-        binding.radioButton3.setText(question.getAnswers().get(2));
-        binding.radioButton4.setText(question.getAnswers().get(3));
-        questionNumbersAdapter.currentQuestionPosition = currentQuestionPosition;
-        questionNumbersAdapter.notifyDataSetChanged();
+        showQuestion(question);
+        setQuestionNumberColor();
         setPreviousBtnVisibility();
         setNextAndSubmitBtnsVisibility();
+    }
+
+    private void showQuestion(Question question) {
+        currentQuestionPosition = question.getNumber() - 1;
+        binding.textView.setText("Q). " + question.getQuestion());
+        binding.option1Rb.setText(question.getAnswers().get(0));
+        binding.option2Rb.setText(question.getAnswers().get(1));
+        binding.option3Rb.setText(question.getAnswers().get(2));
+        binding.option4Rb.setText(question.getAnswers().get(3));
+    }
+
+    private void setQuestionNumberColor() {
+        questionNumbersAdapter.currentQuestionPosition = currentQuestionPosition;
+        questionNumbersAdapter.notifyDataSetChanged();
     }
 
     private void setPreviousBtnVisibility() {
